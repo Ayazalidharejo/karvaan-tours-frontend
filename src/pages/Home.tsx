@@ -1,9 +1,15 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, Users, Camera, Heart } from "lucide-react";
+import { Star, MapPin, Clock, Users, Camera, Heart, Navigation } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/mount-fuji-hero.jpg";
+import mountFujiHero from "@/assets/mount-fuji-hero.jpg";
+import tokyoTower from "@/assets/tokyo-tower.jpg";
+import fushimiInari from "@/assets/fushimi-inari.jpg";
+import bambooForest from "@/assets/bamboo-forest.jpg";
+import osakacastle from "@/assets/osaka-castle.jpg";
+import shibuyaCrossing from "@/assets/shibuya-crossing.jpg";
 
 const Home = () => {
   const featuredDestinations = [
@@ -123,6 +129,7 @@ const Home = () => {
               <Link to="/guide" className="text-foreground hover:text-primary transition-colors">Guide</Link>
               <Link to="/blogs" className="text-foreground hover:text-primary transition-colors">Blog</Link>
               <Link to="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
+              <Link to="/admin/login" className="text-foreground hover:text-primary transition-colors">Admin</Link>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">
@@ -299,6 +306,224 @@ const Home = () => {
                     </Button>
                   </Link>
                 </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Whitelist/Featured Destinations Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge variant="secondary" className="mb-4">
+              ⭐ FEATURED DESTINATIONS
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
+              Most Popular Places to Visit
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Explore Japan's most iconic landmarks and hidden gems - our top recommended destinations
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Mount Fuji",
+                image: mountFujiHero,
+                description: "Japan's sacred mountain and UNESCO World Heritage site",
+                rating: "4.9/5",
+                visitors: "2M+ visitors"
+              },
+              {
+                name: "Tokyo Tower",
+                image: tokyoTower,
+                description: "Iconic red tower offering panoramic city views",
+                rating: "4.7/5",
+                visitors: "1.5M+ visitors"
+              },
+              {
+                name: "Fushimi Inari",
+                image: fushimiInari,
+                description: "Thousands of vermillion torii gates",
+                rating: "4.8/5",
+                visitors: "3M+ visitors"
+              },
+              {
+                name: "Bamboo Forest",
+                image: bambooForest,
+                description: "Mystical bamboo groves in Arashiyama",
+                rating: "4.6/5",
+                visitors: "800K+ visitors"
+              },
+              {
+                name: "Osaka Castle",
+                image: osakacastle,
+                description: "Historic castle with cherry blossoms",
+                rating: "4.5/5",
+                visitors: "1.2M+ visitors"
+              },
+              {
+                name: "Shibuya Crossing",
+                image: shibuyaCrossing,
+                description: "World's busiest pedestrian crossing",
+                rating: "4.4/5",
+                visitors: "2.5M+ visitors"
+              }
+            ].map((destination) => (
+              <Card key={destination.name} className="group hover:shadow-xl transition-all duration-500 overflow-hidden border-2 hover:border-primary/50">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={destination.image} 
+                    alt={destination.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <Badge className="absolute top-3 right-3 bg-white/90 text-black hover:bg-white">
+                    {destination.rating}
+                  </Badge>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-xl font-bold">{destination.name}</h3>
+                    <p className="text-sm opacity-90">{destination.visitors}</p>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground text-sm mb-4">{destination.description}</p>
+                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    View Details
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Route Direction Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4">
+              🗺️ TRAVEL ROUTES
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Popular Travel Routes & Directions
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Follow our recommended routes with detailed stops and directions
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Route 1: Tokyo to Mount Fuji */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-primary to-secondary text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <Navigation className="w-6 h-6" />
+                  Tokyo to Mount Fuji Day Trip
+                </CardTitle>
+                <p className="text-primary-foreground/90">Duration: 10-12 hours | Distance: 120km</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {[
+                    { time: "06:00", location: "Tokyo (Shibuya/Shinjuku)", action: "Pickup from hotel", icon: "🚌" },
+                    { time: "08:30", location: "Lake Kawaguchi", action: "Photo stop & breakfast", icon: "📸" },
+                    { time: "10:00", location: "Mount Fuji 5th Station", action: "Main viewing point", icon: "🗻" },
+                    { time: "12:00", location: "Oshino Hakkai", action: "Traditional village visit", icon: "🏘️" },
+                    { time: "14:00", location: "Hakone", action: "Lunch & hot springs", icon: "🍜" },
+                    { time: "16:00", location: "Gotemba Outlets", action: "Shopping (optional)", icon: "🛍️" },
+                    { time: "18:00", location: "Return to Tokyo", action: "Drop-off at hotel", icon: "🏨" }
+                  ].map((stop, index) => (
+                    <div key={index} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl">{stop.icon}</div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{stop.time}</Badge>
+                          <span className="font-semibold">{stop.location}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{stop.action}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Route 2: Kyoto Cultural Tour */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-secondary to-accent text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <Navigation className="w-6 h-6" />
+                  Kyoto Cultural Heritage Tour
+                </CardTitle>
+                <p className="text-secondary-foreground/90">Duration: 8-10 hours | Distance: 45km</p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {[
+                    { time: "08:00", location: "Kyoto Station", action: "Meet your guide", icon: "🚅" },
+                    { time: "09:00", location: "Fushimi Inari Shrine", action: "Torii gates hiking", icon: "⛩️" },
+                    { time: "11:00", location: "Bamboo Grove", action: "Arashiyama bamboo walk", icon: "🎋" },
+                    { time: "13:00", location: "Traditional Restaurant", action: "Kaiseki lunch", icon: "🍱" },
+                    { time: "14:30", location: "Kiyomizu Temple", action: "Temple & city views", icon: "🏯" },
+                    { time: "16:00", location: "Gion District", action: "Geisha spotting", icon: "👘" },
+                    { time: "17:30", location: "Kyoto Station", action: "Tour completion", icon: "✅" }
+                  ].map((stop, index) => (
+                    <div key={index} className="flex items-center gap-4 p-3 rounded-lg bg-muted/30">
+                      <div className="text-2xl">{stop.icon}</div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{stop.time}</Badge>
+                          <span className="font-semibold">{stop.location}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{stop.action}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <Button size="lg" className="bg-gradient-to-r from-primary to-secondary">
+              <MapPin className="w-5 h-5 mr-2" />
+              View All Routes & Book Now
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Language Support Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4">
+              🌐 MULTILINGUAL SUPPORT
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Guides Available in Multiple Languages
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Our professional guides speak your language for the best experience
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {[
+              { lang: "English", flag: "🇺🇸", level: "Native" },
+              { lang: "Japanese", flag: "🇯🇵", level: "Native" },
+              { lang: "Chinese", flag: "🇨🇳", level: "Fluent" },
+              { lang: "Korean", flag: "🇰🇷", level: "Fluent" },
+              { lang: "Urdu", flag: "🇵🇰", level: "Fluent" }
+            ].map((language) => (
+              <Card key={language.lang} className="text-center p-6 hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-3">{language.flag}</div>
+                <h3 className="font-semibold mb-1">{language.lang}</h3>
+                <Badge variant="secondary" className="text-xs">{language.level}</Badge>
               </Card>
             ))}
           </div>
