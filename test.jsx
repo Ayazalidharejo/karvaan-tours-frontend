@@ -1,0 +1,9 @@
+ mountFuji: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center",
+    tokyoTower: "",
+    fushimiInari: "",
+    bambooForest: "",
+    osakacastle: "",
+    shibuyaCrossing: "",
+    kyotoTemple: "",
+    tokyoStreet: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&h=600&fit=crop&crop=center",
+    heroImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&crop=center"
