@@ -57,6 +57,8 @@ import TourGuide from "./pages/TourGuide";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import BlogDetail from "./pages/BlogDetail";
+import ShortFormDetail from "./components/ShortFormDetail";
 
 const queryClient = new QueryClient();
 
@@ -69,8 +71,9 @@ const App = () => (
         <Header />   {/* 👈 Added here */}
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/tours" element={<Tours />} />
-          {/* <Route path="/destinations" element={<Destinations />} /> */}
+           <Route path="/short-form/:id" element={<ShortFormDetail />} />
           <Route path="/destinations/:id" element={<DestinationDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/guide" element={<TourGuide />} />

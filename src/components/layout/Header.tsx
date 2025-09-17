@@ -38,12 +38,12 @@ const Header = () => {
             >
               Guide
             </Link>
-            <Link
+            {/* <Link
               to="/blogs"
               className="text-foreground hover:text-primary transition-colors"
             >
               Blog
-            </Link>
+            </Link> */}
             <Link
               to="/contact"
               className="text-foreground hover:text-primary transition-colors"
@@ -61,8 +61,8 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
             <Button variant="outline" size="sm">
-              <Heart className="h-4 w-4 mr-2" />
-              Wishlist
+              <Heart className="h-4 w-4 " />
+              
             </Button>
             <Button variant="hero" size="sm">
               Book Now
