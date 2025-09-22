@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 
 const Header = () => {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className=" sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 ">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">

@@ -1,346 +1,434 @@
 
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, Users, Camera, Navigation } from "lucide-react";
-import VerticalItinerary from "@/components/RoutesSection";
-import Footer from "@/components/layout/Footer";
+"use client"
 
-/* ==== BACKEND BASE (no env, no import.meta) ==== */
-const API_BASE = "https://karvaan-backend.vercel.app";
+import type React from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Star, MapPin, Clock, Heart, Users } from "lucide-react"
+import axios from "axios"
+import Footer from "@/components/layout/Footer"
+import VerticalItinerary from "@/components/RoutesSection"
 
-/* ==== Types ==== */
-type Blog = {
-  _id?: string;
-  title: string;
-  content?: string;
-  imageUrl?: string;
-  tags?: string[];
-  views?: number;
-  status?: "draft" | "published" | "archived";
-  featured?: boolean;
-};
-type PagedBlogs = {
-  blogs: Blog[];
-  totalPages: number;
-  currentPage: number;
-  total: number;
-};
+/* ===== Backend BASE ===== */
+const API_BASE = "http://localhost:5000"
 
-type ShortForm = {
-  _id?: string;
-  title: string;
-  price: string;
-  duration: string;
-  rating: number;
-  reviews: number;
-  image?: string; // e.g. "uploads/abc.jpg"
-  languages: string[];
-  includes: string[];
-  status?: "active" | "inactive";
-};
-type PagedShortForms = {
-  shortForms: ShortForm[];
-  totalPages: number;
-  currentPage: number;
-  total: number;
-};
+const api = axios.create({
+  baseURL: API_BASE,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
 
-/* ==== UI mapped ==== */
-type FeaturedDestination = {
-  id: string | null;
-  name: string;
-  image?: string;
-  rating: number | string;
-  price: string;
-  duration: string;
-  description: string;
-  highlights: string[];
-};
-type TopTour = {
-  id: string | null;
-  title: string;
-  price: string;
-  duration: string;
-  rating: number | string;
-  reviews: number;
-  image?: string;
-  languages: string[];
-  includes: string[];
-};
-type PopularDestination = {
-  _id?: string;
-  name: string;
-  image?: string;
-  description: string;
-  rating: string;
-  visitors: string;
-};
+api.interceptors.response.use(
+  (response) => {
+    console.log("[v0] API Response:", response.config.url, response.status)
+    return response
+  },
+  async (error) => {
+    console.error("[v0] API Error:", error.response?.data || error.message)
 
-/* ==== Small helpers ==== */
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} ${res.statusText} :: ${txt}`);
-  }
-  return res.json();
+    if (error.code === "ECONNABORTED" || error.code === "NETWORK_ERROR") {
+      console.log("[v0] Retrying request due to network error...")
+      return api.request(error.config)
+    }
+
+    return Promise.reject(error)
+  },
+)
+
+/* ===== Types ===== */
+interface Blog {
+  _id?: string
+  title: string
+  content?: string
+  imageUrl?: string
+  images?: string[]
+  rating?: { average: number; count: number }
+  price?: string
+  duration?: string
+  tags?: string[]
+  status?: string
+  createdAt?: string
+  updatedAt?: string
+  reviews?: Review[]
 }
-const qsOf = (obj: Record<string, string | number | boolean>) => {
-  const qs = new URLSearchParams();
-  Object.entries(obj).forEach(([k, v]) => qs.set(k, String(v)));
-  return qs.toString();
-};
-const getBlogs = (params: Record<string, string | number | boolean>) =>
-  fetchJSON<PagedBlogs>(`${API_BASE}/api/blogs?${qsOf(params)}`);
-const getShortForms = (params: Record<string, string | number | boolean>) =>
-  fetchJSON<PagedShortForms>(`${API_BASE}/api/short-forms?${qsOf(params)}`);
 
-/* ==== Component ==== */
+interface Review {
+  _id?: string
+  name: string
+  rating: number
+  comment: string
+  createdAt?: string
+}
+
+interface PagedBlogs {
+  posts: Blog[]
+  totalPosts: number
+  totalPages: number
+  currentPage: number
+}
+
+interface FeaturedDestination {
+  id: string | null
+  name: string
+  image: string
+  rating: number
+  price: string
+  duration: string
+  description: string
+  highlights: string[]
+}
+
+interface TopTour {
+  id: string | null
+  name: string
+  image: string
+  rating: number
+  price: string
+  duration: string
+  groupSize: string
+}
+
+interface PopularDestination {
+  id: string | null
+  name: string
+  image: string
+  toursCount: number
+}
+
+/* ===== Enhanced API Functions with better error handling ===== */
+const toAbs = (url?: string): string => {
+  if (!url) return ""
+  if (url.startsWith("http")) return url
+  return `${API_BASE}${url.startsWith("/") ? "" : "/"}${url}`
+}
+
+const getFeaturedBlogs = async (limit = 6) => {
+  try {
+    console.log("[v0] Fetching featured blogs...")
+    const response = await api.get<PagedBlogs>("/api/posts", {
+      params: { featured: true, limit, page: 1, status: "published" },
+    })
+
+    if (!response.data || !Array.isArray(response.data.posts)) {
+      console.warn("[v0] Invalid response structure for featured blogs")
+      return { posts: [], totalPosts: 0, totalPages: 0, currentPage: 1 }
+    }
+
+    console.log("[v0] Featured blogs fetched:", response.data.posts.length)
+    return response.data
+  } catch (error) {
+    console.error("[v0] Error fetching featured blogs:", error)
+    throw error
+  }
+}
+
+const getBlogs = async (params: Record<string, string | number | boolean | undefined>) => {
+  try {
+    console.log("[v0] Fetching blogs with params:", params)
+    const response = await api.get<PagedBlogs>("/api/posts", { params })
+
+    if (!response.data || !Array.isArray(response.data.posts)) {
+      console.warn("[v0] Invalid response structure for blogs")
+      return { posts: [], totalPosts: 0, totalPages: 0, currentPage: 1 }
+    }
+
+    console.log("[v0] Blogs fetched:", response.data.posts.length)
+    return response.data
+  } catch (error) {
+    console.error("[v0] Error fetching blogs:", error)
+    throw error
+  }
+}
+
 const Home: React.FC = () => {
-  const [loadingFeatured, setLoadingFeatured] = useState(true);
-  const [loadingTop, setLoadingTop] = useState(true);
-  const [loadingPopular, setLoadingPopular] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [selectedPostId, setSelectedPostId] = useState<string>("")
 
-  const [featuredDestinations, setFeaturedDestinations] = useState<FeaturedDestination[]>([]);
-  const [topTours, setTopTours] = useState<TopTour[]>([]);
-  const [popularDestinations, setPopularDestinations] = useState<PopularDestination[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true)
+  const [loadingTop, setLoadingTop] = useState(true)
+  const [loadingPopular, setLoadingPopular] = useState(true)
+  const [errorMsg, setErrorMsg] = useState("")
 
-  const heroImage =
-    "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1600&h=900&fit=crop&crop=center";
-  const fallbackTourImage =
-    "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&h=800&fit=crop&crop=center";
+  const [featuredDestinations, setFeaturedDestinations] = useState<FeaturedDestination[]>([])
+  const [topTours, setTopTours] = useState<TopTour[]>([])
+  const [popularDestinations, setPopularDestinations] = useState<PopularDestination[]>([])
 
-  /* Mappers */
-  const blogToFeaturedDestination = (b: Blog): FeaturedDestination => ({
-    id: b._id ?? null,
-    name: b.title,
-    image: b.imageUrl,
-    rating: 4.8,
-    price: "¥8,000",
-    duration: "Half Day",
-    description: (b.content || "").slice(0, 120) + ((b.content || "").length > 120 ? "…" : ""),
-    highlights: Array.isArray(b.tags) && b.tags.length ? b.tags.slice(0, 3) : [],
-  });
+  const heroImage = useMemo(
+    () => "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1600&h=900&fit=crop&crop=center",
+    [],
+  )
+  const fallbackTourImage = useMemo(
+    () => "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&h=800&fit=crop&crop=center",
+    [],
+  )
 
-  const sfToTopTour = (s: ShortForm): TopTour => ({
-    id: s._id ?? null,
-    title: s.title,
-    price: s.price || "—",
-    duration: s.duration || "—",
-    rating: s.rating ?? 0,
-    reviews: s.reviews ?? 0,
-    image: s.image
-      ? s.image.startsWith("http")
-        ? s.image
-        : `${API_BASE}/${s.image.replace(/\\/g, "/")}`
-      : fallbackTourImage,
-    languages: Array.isArray(s.languages) ? s.languages : [],
-    includes: Array.isArray(s.includes) ? s.includes : [],
-  });
+  /* ----- Enhanced mapping helpers with null safety ----- */
+  const blogToFeaturedDestination = useCallback((b: Blog): FeaturedDestination => {
+    const imageUrl = b.imageUrl || (b.images && b.images.length > 0 ? b.images[0] : "") || ""
+    const safeTitle = b.title || "Untitled Tour"
+    const safePrice = b.price || "¥0"
+    const safeDuration = b.duration || "Duration not specified"
+    const safeContent = b.content || "No description available"
+    const safeRating = b.rating?.average || 4.0
+    const safeTags = Array.isArray(b.tags) ? b.tags : []
 
-  const blogToPopularDestination = (b: Blog): PopularDestination => ({
-    _id: b._id,
-    name: b.title,
-    image: b.imageUrl,
-    description: (b.content || "").slice(0, 90) + ((b.content || "").length > 90 ? "…" : ""),
-    rating: "4.6/5",
-    visitors: `${b.views ?? 0}+ visitors`,
-  });
+    return {
+      id: b._id ?? null,
+      name: safeTitle,
+      image: toAbs(imageUrl),
+      rating: safeRating,
+      price: safePrice,
+      duration: safeDuration,
+      description: safeContent.slice(0, 120) + (safeContent.length > 120 ? "…" : ""),
+      highlights: safeTags.slice(0, 3),
+    }
+  }, [])
 
-  /* Data load */
+  const blogToTopTour = useCallback(
+    (b: Blog): TopTour => {
+      const imageUrl = b.imageUrl || (b.images && b.images.length > 0 ? b.images[0] : "") || ""
+      const safeTitle = b.title || "Untitled Tour"
+      const safePrice = b.price || "¥0"
+      const safeDuration = b.duration || "Duration not specified"
+      const safeRating = b.rating?.average || 4.0
+
+      return {
+        id: b._id ?? null,
+        name: safeTitle,
+        image: toAbs(imageUrl) || fallbackTourImage,
+        rating: safeRating,
+        price: safePrice,
+        duration: safeDuration,
+        groupSize: "Max 12",
+      }
+    },
+    [fallbackTourImage],
+  )
+
+  const blogToPopularDestination = useCallback(
+    (b: Blog): PopularDestination => {
+      const imageUrl = b.imageUrl || (b.images && b.images.length > 0 ? b.images[0] : "") || ""
+      const safeTitle = b.title || "Untitled Destination"
+
+      return {
+        id: b._id ?? null,
+        name: safeTitle,
+        image: toAbs(imageUrl) || fallbackTourImage,
+        toursCount: Math.floor(Math.random() * 20) + 5,
+      }
+    },
+    [fallbackTourImage],
+  )
+
+  /* ----- Enhanced data loading with better error recovery ----- */
   useEffect(() => {
-    let cancelled = false;
+    const loadData = async () => {
+      setErrorMsg("")
+      setLoadingFeatured(true)
+      setLoadingTop(true)
+      setLoadingPopular(true)
 
-    (async () => {
-      // Featured (blogs - try featured first, else fallback to published)
       try {
-        const fea = await getBlogs({ status: "published", featured: true, limit: 6, page: 1 });
-        let list = fea.blogs || [];
-        if (!list.length) {
-          const pub = await getBlogs({ status: "published", limit: 6, page: 1 });
-          list = pub.blogs || [];
+        try {
+          console.log("[v0] Loading featured posts...")
+          const featuredData = await getFeaturedBlogs(6)
+
+          let featuredList = featuredData.posts || []
+
+          if (featuredList.length === 0) {
+            console.log("[v0] No featured posts found, loading any published posts...")
+            const publishedData = await getBlogs({
+              status: "published",
+              limit: 6,
+              page: 1,
+            })
+            featuredList = publishedData.posts || []
+          }
+
+          if (featuredList.length === 0) {
+            console.log("[v0] No published posts found, loading any posts...")
+            const anyData = await getBlogs({
+              limit: 6,
+              page: 1,
+            })
+            featuredList = anyData.posts || []
+          }
+
+          console.log("[v0] Featured posts loaded:", featuredList.length)
+          setFeaturedDestinations(featuredList.map(blogToFeaturedDestination))
+        } catch (error) {
+          console.error("[v0] Error loading featured destinations:", error)
+          setErrorMsg((prev) => prev || "Failed to load featured destinations.")
+          setFeaturedDestinations([])
+        } finally {
+          setLoadingFeatured(false)
         }
-        if (!cancelled) setFeaturedDestinations(list.map(blogToFeaturedDestination));
-      } catch {
-        if (!cancelled) setErrorMsg((p) => p || "Failed to load featured destinations.");
-      } finally {
-        if (!cancelled) setLoadingFeatured(false);
+
+        try {
+          console.log("[v0] Loading top tours...")
+          const topData = await getBlogs({
+            status: "published",
+            limit: 4,
+            page: 1,
+          })
+
+          const topList = topData.posts || []
+          console.log("[v0] Top tours loaded:", topList.length)
+          setTopTours(topList.map(blogToTopTour))
+        } catch (error) {
+          console.error("[v0] Error loading top tours:", error)
+          setErrorMsg((prev) => prev || "Failed to load top tours.")
+          setTopTours([])
+        } finally {
+          setLoadingTop(false)
+        }
+
+        try {
+          console.log("[v0] Loading popular destinations...")
+          const popularData = await getBlogs({
+            status: "published",
+            limit: 8,
+            page: 1,
+          })
+
+          const popularList = popularData.posts || []
+          console.log("[v0] Popular destinations loaded:", popularList.length)
+          setPopularDestinations(popularList.map(blogToPopularDestination))
+        } catch (error) {
+          console.error("[v0] Error loading popular destinations:", error)
+          setErrorMsg((prev) => prev || "Failed to load popular destinations.")
+          setPopularDestinations([])
+        } finally {
+          setLoadingPopular(false)
+        }
+      } catch (error) {
+        console.error("[v0] General error loading data:", error)
+        setErrorMsg("Failed to load page data. Please check your connection and try again.")
       }
+    }
 
-      // Top tours (short-forms)
-      try {
-        const sf = await getShortForms({ status: "active", limit: 3, page: 1 });
-        const list = (sf.shortForms || []).slice(0, 3).map(sfToTopTour);
-        if (!cancelled) setTopTours(list);
-      } catch {
-        if (!cancelled) setErrorMsg((p) => p || "Failed to load tours.");
-      } finally {
-        if (!cancelled) setLoadingTop(false);
-      }
+    loadData()
+  }, [blogToFeaturedDestination, blogToTopTour, blogToPopularDestination])
 
-      // Popular (blogs)
-      try {
-        const pop = await getBlogs({ status: "published", limit: 6, page: 1 });
-        const list = (pop.blogs || []).slice(0, 6).map(blogToPopularDestination);
-        if (!cancelled) setPopularDestinations(list);
-      } catch {
-        if (!cancelled) setErrorMsg((p) => p || "Failed to load popular places.");
-      } finally {
-        if (!cancelled) setLoadingPopular(false);
-      }
-    })();
+  const handleViewDetails = (postId: string) => {
+    if (postId && postId !== "null") {
+      console.log("[v0] Navigating to detail page:", postId)
+      window.location.href = `/detail/${postId}`
+    } else {
+      console.warn("[v0] Invalid post ID for navigation:", postId)
+      setErrorMsg("Unable to view details for this item.")
+    }
+  }
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /* UI helpers */
-  const GridSkeleton: React.FC<{ rows?: number }> = ({ rows = 6 }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {Array.from({ length: rows }).map((_, i) => (
-        <Card key={i} className="overflow-hidden border-0 shadow animate-pulse">
-          <div className="w-full h-48 bg-gray-200" />
-          <CardContent className="p-6">
-            <div className="h-6 bg-gray-200 rounded mb-3" />
-            <div className="h-4 bg-gray-200 rounded mb-2" />
-            <div className="h-4 w-2/3 bg-gray-200 rounded" />
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-
-  const EmptyState: React.FC<{ label?: string }> = ({ label }) => (
-    <div className="text-center text-gray-500 py-10">{label || "No items found."}</div>
-  );
-
-  const handleNavClick = (section: string) => {
-    if (section === "home") window.scrollTo({ top: 0, behavior: "smooth" });
-    else document.getElementById(section)?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Show home view
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover object-fit-contain bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
+    <div className="min-h-screen bg-white ">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center text-white ">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat "
+          style={{ backgroundImage: `url(${heroImage})`,marginTop:"20px" }}
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Discover the Magic of
-            <span className="block bg-gradient-to-r from-orange-400 to-pink-600 bg-clip-text text-transparent">
-              Mount Fuji
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Experience Japan's most sacred mountain with expert guides and unforgettable memories
+        <div className="absolute inset-0 bg-black bg-opacity-50" />
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-balance">Discover Japan's Hidden Gems</h1>
+          <p className="text-xl md:text-2xl mb-8 text-pretty">
+            Experience authentic Japanese culture through carefully curated tours and adventures
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700"
-              onClick={() => handleNavClick("tours")}
-            >
-              <Camera className="mr-2 h-5 w-5" />
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
               Explore Tours
             </Button>
             <Button
-              variant="outline"
               size="lg"
-              className="text-lg px-8 py-6 bg-white/20 border-white text-white hover:bg-white/30"
-              onClick={() => handleNavClick("routes")}
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-black px-8 py-3 bg-transparent"
             >
-              <MapPin className="mr-2 h-5 w-5" />
-              Plan Your Journey
+              Learn More
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Featured Destinations (blogs) */}
-      <section id="destinations" className="py-20 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Famous Japanese Destinations
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the most beautiful and culturally significant places across Japan
+      {/* Error Message */}
+      {errorMsg && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mx-4 my-4">
+          <p>{errorMsg}</p>
+        </div>
+      )}
+
+      {/* Featured Destinations */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Destinations</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover the most breathtaking locations Japan has to offer
             </p>
           </div>
 
           {loadingFeatured ? (
-            <GridSkeleton />
-          ) : featuredDestinations.length === 0 ? (
-            <EmptyState label="No featured destinations found." />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="overflow-hidden animate-pulse">
+                  <div className="h-64 bg-gray-300" />
+                  <CardContent className="p-6">
+                    <div className="h-4 bg-gray-300 rounded mb-2" />
+                    <div className="h-4 bg-gray-300 rounded w-3/4" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredDestinations.map((d, idx) => (
-                <Card
-                  key={d.id ?? `f-${idx}`}
-                  className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
-                >
-                  <div className="relative overflow-hidden">
-                    {d.image ? (
-                      <img
-                        src={d.image}
-                        alt={d.name}
-                        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-64 bg-gray-200" />
-                    )}
+              {featuredDestinations.map((destination) => (
+                <Card key={destination.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="relative h-64">
+                    <img
+                      src={destination.image || fallbackTourImage}
+                      alt={destination.name}
+                      className="w-full h-full object-cover"
+                    />
                     <div className="absolute top-4 right-4">
-                      <Badge className="bg-white/90 text-blue-600">
-                        <Star className="h-3 w-3 mr-1 fill-current" /> {d.rating}
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <h3 className="text-white text-xl font-bold mb-1">{d.name}</h3>
-                          <div className="flex items-center text-white/80 text-sm">
-                            <Clock className="h-4 w-4 mr-1" /> {d.duration}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-white text-lg font-bold">{d.price}</div>
-                          <div className="text-white/80 text-sm">per person</div>
-                        </div>
-                      </div>
+                      <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white">
+                        <Heart className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <p className="text-gray-600 mb-4">{d.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {(d.highlights || []).map((h, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs bg-blue-100 text-blue-800">
-                          {h}
-                        </Badge>
-                      ))}
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900">{destination.name}</h3>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="ml-1 text-sm text-gray-600">{destination.rating}</span>
+                      </div>
                     </div>
-
-                    {d.id ? (
-                      <Link to={`/blog/${d.id}`}>
-                        <Button className="w-full" variant="outline">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          Explore Destination
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button className="w-full" variant="outline" disabled>
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Explore Destination
-                      </Button>
+                    <p className="text-gray-600 mb-4 line-clamp-3">{destination.description}</p>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {destination.duration}
+                      </div>
+                      <div className="text-lg font-semibold text-blue-600">{destination.price}</div>
+                    </div>
+                    {destination.highlights.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {destination.highlights.map((highlight, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {highlight}
+                          </Badge>
+                        ))}
+                      </div>
                     )}
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => handleViewDetails(destination.id || "")}
+                    >
+                      View Details
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -349,99 +437,68 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Top Tours (short-forms) */}
-      <section id="tours" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Popular Tours</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join thousands of satisfied travelers on our most beloved Japanese adventures
+      {/* Top Tours */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Top Tours</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Experience Japan like never before with our most popular tours
             </p>
           </div>
 
           {loadingTop ? (
-            <GridSkeleton rows={3} />
-          ) : topTours.length === 0 ? (
-            <EmptyState label="No tours found." />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-300" />
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-gray-300 rounded mb-2" />
+                    <div className="h-4 bg-gray-300 rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {topTours.map((t, idx) => (
-                <Card
-                  key={t.id ?? `t-${idx}`}
-                  className="overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300"
-                >
-                  <div className="relative">
-                    {t.image ? (
-                      <img src={t.image} alt={t.title} className="w-full h-48 object-cover" />
-                    ) : (
-                      <div className="w-full h-48 bg-gray-200" />
-                    )}
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-red-500 text-white">Best Seller</Badge>
-                    </div>
-                    <div className="absolute top-4 right-4">
-                      <div className="bg-white/90 backdrop-blur rounded-full px-3 py-1 text-sm font-semibold">
-                        {t.price}
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {topTours.map((tour) => (
+                <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="relative h-48">
+                    <img
+                      src={tour.image || "/placeholder.svg"}
+                      alt={tour.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-green-500 text-white">Popular</Badge>
                     </div>
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2">{t.title}</h3>
-                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{tour.name}</h3>
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" /> {t.duration}
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                        {tour.rating}
                       </div>
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" /> {t.rating} ({t.reviews})
+                        <Users className="h-4 w-4 mr-1" />
+                        {tour.groupSize}
                       </div>
                     </div>
-
-                    <div className="mb-4">
-                      <h4 className="font-semibold mb-2">Languages Available:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {(t.languages || []).map((lang, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
-                            {lang}
-                          </Badge>
-                        ))}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {tour.duration}
                       </div>
+                      <div className="font-semibold text-blue-600">{tour.price}</div>
                     </div>
-
-                    <div className="mb-6">
-                      <h4 className="font-semibold mb-2">Includes:</h4>
-                      <div className="grid grid-cols-2 gap-1 text-sm text-gray-600">
-                        {(t.includes || []).map((item, i) => (
-                          <div key={i} className="flex items-center">
-                            <div className="w-1 h-1 bg-blue-600 rounded-full mr-2" />
-                            {item}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* {t.id ? (
-                      <Link to={`/short-form/${t.id}`}>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                          <Users className="h-4 w-4 mr-2" />
-                          Book This Tour
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button className="w-full" disabled>
-                        <Users className="h-4 w-4 mr-2" />
-                        Book This Tour
-                      </Button>
-                    )} */}
-                    {t.id ? (
-  <Link to={`/short-form/${t.id}`}>
-    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-      Book This Tour
-    </Button>
-  </Link>
-) : (
-  <Button className="w-full" disabled>Book This Tour</Button>
-)}
-
+                    <Button
+                      size="sm"
+                      className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => handleViewDetails(tour.id || "")}
+                    >
+                      Book Now
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -450,62 +507,45 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Popular Places (blogs) */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-blue-100 text-blue-800">⭐ FEATURED DESTINATIONS</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Most Popular Places to Visit
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore Japan's most iconic landmarks and hidden gems - our top recommended destinations
+      {/* Popular Destinations */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Popular Destinations</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Explore the most loved destinations by our travelers
             </p>
           </div>
 
           {loadingPopular ? (
-            <GridSkeleton />
-          ) : popularDestinations.length === 0 ? (
-            <EmptyState label="No popular places found." />
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+              {[...Array(8)].map((_, i) => (
+                <Card key={i} className="overflow-hidden animate-pulse">
+                  <div className="h-32 bg-gray-300" />
+                  <CardContent className="p-3">
+                    <div className="h-3 bg-gray-300 rounded mb-1" />
+                    <div className="h-3 bg-gray-300 rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {popularDestinations.map((d, idx) => (
-                <Card
-                  key={d._id ?? `p-${idx}`}
-                  className="group hover:shadow-xl transition-all duration-500 overflow-hidden border-2 hover:border-blue-300"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    {d.image ? (
-                      <img
-                        src={d.image}
-                        alt={d.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <Badge className="absolute top-3 right-3 bg-white/90 text-black hover:bg-white">
-                      {d.rating}
-                    </Badge>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h3 className="text-xl font-bold">{d.name}</h3>
-                      <p className="text-sm opacity-90">{d.visitors}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+              {popularDestinations.map((destination) => (
+                <Card key={destination.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                  <div className="relative h-32">
+                    <img
+                      src={destination.image || "/placeholder.svg"}
+                      alt={destination.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-20" />
+                    <div className="absolute bottom-2 left-2 text-white">
+                      <div className="text-xs font-medium">{destination.toursCount} tours</div>
                     </div>
                   </div>
-                  <CardContent className="p-6">
-                    <p className="text-gray-600 text-sm mb-4">{d.description}</p>
-                    {d._id ? (
-                      <Link to={`/blog/${d._id}`}>
-                        <Button variant="outline" className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                          <MapPin className="w-4 h-4 mr-2" /> View Details
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button variant="outline" className="w-full" disabled>
-                        <MapPin className="w-4 h-4 mr-2" /> View Details
-                      </Button>
-                    )}
+                  <CardContent className="p-3">
+                    <h4 className="font-medium text-gray-900 text-sm line-clamp-2">{destination.name}</h4>
                   </CardContent>
                 </Card>
               ))}
@@ -513,68 +553,28 @@ const Home: React.FC = () => {
           )}
         </div>
       </section>
-
-   
-      <VerticalItinerary />
-
-
-
-
-       {/* Languages */}
-       <section id="languages" className="py-20 bg-white">
-         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-           <div className="text-center mb-16">
-             <Badge variant="outline" className="mb-4">🌐 MULTILINGUAL SUPPORT</Badge>
-             <h2 className="text-4xl md:text-5xl font-bold mb-6">Guides Available in Multiple Languages</h2>
-             <p className="text-xl text-gray-600 max-w-3xl mx-auto">Our professional guides speak your language for the best experience</p>
-           </div>
-           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-             {[
-               { lang: "English", flag: "🇺🇸", level: "Native" },
-               { lang: "Japanese", flag: "🇯🇵", level: "Native" },
-               { lang: "Chinese", flag: "🇨🇳", level: "Fluent" },
-               { lang: "Korean", flag: "🇰🇷", level: "Fluent" },
-               { lang: "Urdu", flag: "🇵🇰", level: "Fluent" }
-             ].map((language) => (
-               <Card key={language.lang} className="text-center p-6 hover:shadow-lg transition-shadow">
-                 <div className="text-4xl mb-3">{language.flag}</div>
-                 <h3 className="font-semibold mb-1">{language.lang}</h3>
-                 <Badge variant="secondary" className="text-xs">{language.level}</Badge>
-               </Card>
-             ))}
-           </div>
-         </div>
-      </section>
-
-
-      {/* Stats + Footer */}
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">50,000+</div>
-              <div className="text-blue-200">Happy Travelers</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">200+</div>
-              <div className="text-blue-200">Tour Packages</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">15</div>
-              <div className="text-blue-200">Years Experience</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">4.9</div>
-              <div className="text-blue-200">Average Rating</div>
-            </div>
+<VerticalItinerary/>
+      {/* Newsletter Section */}
+      <section className="py-16 px-4 bg-blue-600 text-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+          <p className="text-xl mb-8">Get the latest travel tips and exclusive offers delivered to your inbox</p>
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3">Subscribe</Button>
           </div>
-          {errorMsg && <p className="text-center mt-6 text-blue-100">{errorMsg}</p>}
         </div>
       </section>
 
-      <Footer />
+      {/* Footer */}
+     
+      <Footer/>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

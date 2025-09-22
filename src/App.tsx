@@ -71,7 +71,8 @@ const App = () => (
         <Header />   {/* 👈 Added here */}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/blog/:id" element={<BlogDetail />} />
+          {/* <Route path="/detail/:id" element={<BlogDetail />} /> */}
+           <Route path="/detail/:id" element={<BlogDetail />} />
           <Route path="/tours" element={<Tours />} />
            <Route path="/short-form/:id" element={<ShortFormDetail />} />
           <Route path="/destinations/:id" element={<DestinationDetail />} />
