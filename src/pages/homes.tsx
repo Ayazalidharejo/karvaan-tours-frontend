@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { BookOpen, Settings, MapPin, Star } from "lucide-react"
 import { Link } from "react-router-dom"
 
-export default function Page() {
+const Homes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -63,7 +63,7 @@ export default function Page() {
                   Location & Category Management
                 </div>
               </div>
-              <Link href="/admin">
+              <Link to="/admin">
                 <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 text-lg font-semibold shadow-lg">
                   Access Admin Panel
                 </Button>
@@ -98,7 +98,7 @@ export default function Page() {
                   Detailed Tour Information
                 </div>
               </div>
-              <Link href="/tours">
+              <Link to="/tours">
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-3 text-lg font-semibold shadow-lg">
                   Browse Tours
                 </Button>
@@ -149,10 +149,10 @@ export default function Page() {
             <h3 className="text-2xl font-bold mb-4">Carwan Tours</h3>
             <p className="text-gray-400 mb-4">Your comprehensive tour management and booking system</p>
             <div className="flex justify-center space-x-6">
-              <Link href="/admin" className="text-gray-400 hover:text-white transition-colors">
+              <Link to="/admin" className="text-gray-400 hover:text-white transition-colors">
                 Admin Panel
               </Link>
-              <Link href="/tours" className="text-gray-400 hover:text-white transition-colors">
+              <Link to="/tours" className="text-gray-400 hover:text-white transition-colors">
                 Browse Tours
               </Link>
             </div>
@@ -162,3 +162,5 @@ export default function Page() {
     </div>
   )
 }
+
+export default Homes

@@ -20,7 +20,7 @@ import {
   BarChart3,
 } from "lucide-react"
 
-const API_BASE = "http://localhost:5000/api" // Change to your backend URL
+const API_BASE = "https://karvaan-backend.vercel.app/api" // Change to your backend URL
 
 type Tour = {
   _id?: string

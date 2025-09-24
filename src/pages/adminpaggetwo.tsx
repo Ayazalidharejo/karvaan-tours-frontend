@@ -103,7 +103,7 @@ const AdminDashboards = () => {
     totalViews: 0,
   })
 
-  const API_BASE_URL = "http://localhost:5000/api"
+  const API_BASE_URL = "https://karvaan-backend.vercel.app/api"
 
   const getAuthToken = () => localStorage.getItem("adminToken")
   const getAuthHeaders = () => ({

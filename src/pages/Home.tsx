@@ -10,9 +10,10 @@ import { Star, MapPin, Clock, Heart, Users } from "lucide-react"
 import axios from "axios"
 import Footer from "@/components/layout/Footer"
 import VerticalItinerary from "@/components/RoutesSection"
+import Homes from "@/pages/Homes"
 
 /* ===== Backend BASE ===== */
-const API_BASE = "http://localhost:5000"
+const API_BASE = "https://karvaan-backend.vercel.app"
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -507,53 +508,9 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Popular Destinations */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Popular Destinations</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Explore the most loved destinations by our travelers
-            </p>
-          </div>
-
-          {loadingPopular ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-              {[...Array(8)].map((_, i) => (
-                <Card key={i} className="overflow-hidden animate-pulse">
-                  <div className="h-32 bg-gray-300" />
-                  <CardContent className="p-3">
-                    <div className="h-3 bg-gray-300 rounded mb-1" />
-                    <div className="h-3 bg-gray-300 rounded w-2/3" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-              {popularDestinations.map((destination) => (
-                <Card key={destination.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="relative h-32">
-                    <img
-                      src={destination.image || "/placeholder.svg"}
-                      alt={destination.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-20" />
-                    <div className="absolute bottom-2 left-2 text-white">
-                      <div className="text-xs font-medium">{destination.toursCount} tours</div>
-                    </div>
-                  </div>
-                  <CardContent className="p-3">
-                    <h4 className="font-medium text-gray-900 text-sm line-clamp-2">{destination.name}</h4>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+    
 <VerticalItinerary/>
+
       {/* Newsletter Section */}
       <section className="py-16 px-4 bg-blue-600 text-white">
         <div className="max-w-4xl mx-auto text-center">

@@ -16,18 +16,18 @@ const Footer = () => {
                 Your trusted partner for unforgettable Japanese adventures and cultural experiences.
               </p>
               <div className="flex space-x-4">
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">Facebook</Button>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">Instagram</Button>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">Twitter</Button>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-black">Facebook</Button>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-black">Instagram</Button>
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-black">Twitter</Button>
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <div className="space-y-2">
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Tours</a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Destinations</a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Travel Guide</a>
-                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Blog</a>
+                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Home</a>
+                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Guide</a>
+                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Contact</a>
+                {/* <a href="#" className="block text-gray-400 hover:text-white transition-colors">Blog</a> */}
               </div>
             </div>
             <div>
