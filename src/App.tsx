@@ -62,7 +62,7 @@ import ShortFormDetail from "./components/ShortFormDetail";
 import BlogList from "./pages/Home";
 import ToursList from "./pages/ToursList";
 import TourDetail from "./pages/TourDetail";
-import AdminTours from "./pages/Think";
+// import AdminTours from "./pages/Think";
 import TourForm from "./pages/TourForm";
 
 const queryClient = new QueryClient();
@@ -79,7 +79,7 @@ const App = () => (
         <Route path="/tours/:id" element={<TourDetail />} />
 
         {/* admin */}
-        <Route path="/admin/tours" element={<AdminTours />} />
+        {/* <Route path="/admin/tours" element={<AdminTours />} /> */}
         <Route path="/admin/tours/new" element={<TourForm />} />
         <Route path="/admin/tours/edit/:id" element={<TourForm />} />
           <Route path="/" element={<Home />} />
