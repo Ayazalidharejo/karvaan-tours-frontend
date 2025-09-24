@@ -261,14 +261,14 @@ console.log(data);
         <div className="text-center">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
             <X className="h-12 w-12 text-red-600 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-red-800 mb-2">Error Loading Tour</h2>
+            <h2 className="text-xl font-bold text-red-800 mb-2">Error Loading home</h2>
             <p className="text-red-700 mb-4">{error || 'Tour not found'}</p>
             <button
-              onClick={() => navigate('/tours')}
+              onClick={() => navigate('/')}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center mx-auto"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Tours
+              Back to home
             </button>
           </div>
         </div>
