@@ -1389,7 +1389,7 @@ import {
   Phone,
   Mail,
   Shield,
-  Suitcase,
+   Briefcase,
   Heart,
   ShoppingBag,
   Camera,
@@ -2395,7 +2395,7 @@ function TourModal({
               { id: "faqs", label: "FAQs", icon: AlertCircle },
               { id: "foods", label: "Foods", icon: Utensils },
               { id: "activities", label: "Activities", icon: Mountain },
-              { id: "accommodations", label: "Accommodations", icon: Suitcase },
+              { id: "accommodations", label: "Accommodations", icon:  Briefcase },
               { id: "transport", label: "Transport", icon: Car },
               { id: "safety", label: "Safety", icon: Shield },
               { id: "shopping", label: "Shopping", icon: ShoppingBag },
@@ -2404,7 +2404,7 @@ function TourModal({
               { id: "culture", label: "Culture", icon: Palette },
               { id: "medical", label: "Medical", icon: Heart },
               { id: "insurance", label: "Insurance", icon: Shield },
-              { id: "packing", label: "Packing", icon: Suitcase },
+              { id: "packing", label: "Packing", icon:  Briefcase },
               { id: "admin", label: "Admin", icon: User },
             ].map((tab) => {
               const IconComponent = tab.icon
