@@ -50,7 +50,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/layout/Header"; // 👈 import here
 import Home from "./pages/Home";
 import Tours from "./pages/Tours";
-import Destinations from "./pages/Destinations";
+// import Destinations from "./pages/Destinations";
 import DestinationDetail from "./pages/DestinationDetail";
 import Contact from "./pages/Contact";
 import TourGuide from "./pages/TourGuide";
@@ -59,6 +59,11 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import BlogDetail from "./pages/BlogDetail";
 import ShortFormDetail from "./components/ShortFormDetail";
+import BlogList from "./pages/Home";
+import ToursList from "./pages/ToursList";
+import TourDetail from "./pages/TourDetail";
+import AdminTours from "./pages/Think";
+import TourForm from "./pages/TourForm";
 
 const queryClient = new QueryClient();
 
@@ -70,8 +75,16 @@ const App = () => (
       <BrowserRouter>
         <Header />   {/* 👈 Added here */}
         <Routes>
+            <Route path="/tours" element={<ToursList />} />
+        <Route path="/tours/:id" element={<TourDetail />} />
+
+        {/* admin */}
+        <Route path="/admin/tours" element={<AdminTours />} />
+        <Route path="/admin/tours/new" element={<TourForm />} />
+        <Route path="/admin/tours/edit/:id" element={<TourForm />} />
           <Route path="/" element={<Home />} />
-          {/* <Route path="/detail/:id" element={<BlogDetail />} /> */}
+          <Route path="/" element={<BlogList />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
            <Route path="/detail/:id" element={<BlogDetail />} />
           <Route path="/tours" element={<Tours />} />
            <Route path="/short-form/:id" element={<ShortFormDetail />} />

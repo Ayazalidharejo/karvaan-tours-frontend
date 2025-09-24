@@ -25,12 +25,12 @@ const Header = () => {
             >
               Home
             </Link>
-            <Link
+            {/* <Link
               to="/tours"
               className="text-foreground hover:text-primary transition-colors"
             >
               Tours
-            </Link>
+            </Link> */}
             {/* <Link to="/destinations" className="text-foreground hover:text-primary transition-colors">Destinations</Link> */}
             <Link
               to="/guide"

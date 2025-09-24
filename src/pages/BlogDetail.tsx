@@ -1,5 +1,3 @@
-
-
 "use client"
 
 import type React from "react"
@@ -355,42 +353,8 @@ const BlogDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
-     
-  {/* Hero Image */}
-       {/* <div className="relative h-96 md:h-[500px]">
-         <img
-           src={mainImage || "/placeholder.svg"}
-           alt={safeTitle}
-           className="w-full h-full object-cover"
-           onError={(e) => {
-             const target = e.target as HTMLImageElement
-             if (target.src !== fallbackImage) {
-               target.src = fallbackImage
-             }
-           }}
-         />
-         <div className="absolute inset-0 bg-black bg-opacity-30" />
-        <div className="absolute bottom-6 left-6 text-white">
-           <h1 className="text-3xl md:text-5xl font-bold mb-2 text-balance">{safeTitle}</h1>
-           {post.nameJp && <p className="text-xl md:text-2xl mb-2 text-gray-200">{post.nameJp}</p>}
-           <div className="flex items-center space-x-4">
-             <div className="flex items-center">
-               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 mr-1" />
-               <span className="font-semibold">{safeRating}</span>
-               <span className="text-gray-200 ml-1">({safeRatingCount} reviews)</span>
-             </div>
-             {post.prefecture && (
-               <div className="flex items-center">
-                 <MapPin className="h-4 w-4 mr-1" />
-                <span>{post.prefecture}</span>
-               </div>
-             )}
-           </div>
-         </div>
-       </div> */}
- <div className="relative h-[100vh] overflow-hidden">
+      {/* Hero Section */}
+      <div className="relative h-[100vh] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 h-full">
           <div className="grid grid-cols-12 gap-4 h-full">
            
@@ -436,8 +400,9 @@ const BlogDetail: React.FC = () => {
 
             {/* Side images - 5 columns total, stacked */}
             <div className="col-span-12 md:col-span-5 flex flex-col gap-4 h-full">
-              <div className="flex- relative rounded-2xl overflow-hidden object-fit-contain shadow-xl">
-                <img  style={{height:"320px"}}
+              <div className="flex-1 relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  style={{height:"320px"}}
                   src={
                     safeImages[1]
                       ? toAbs(safeImages[1])
@@ -455,8 +420,9 @@ const BlogDetail: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex- relative rounded-2xl overflow-hidden shadow-xl">
-                <img  style={{height:"320px"}}
+              <div className="flex-1 relative rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  style={{height:"320px"}}
                   src={
                     safeImages[2]
                       ? toAbs(safeImages[2])
@@ -480,6 +446,7 @@ const BlogDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -536,286 +503,235 @@ const BlogDetail: React.FC = () => {
               </Card>
             )}
 
+            {/* Reviews Section - Fixed JSX Structure */}
             {safeReviews.length > 0 && (
-              // <Card className="shadow-md border-l-4 border-l-yellow-400">
-              //   <CardContent className="p-6">
-              //     <div className="flex items-center justify-between mb-6">
-              //       <h3 className="text-2xl font-bold">Customer Reviews</h3>
-              //       <div className="flex items-center bg-yellow-50 px-3 py-1 rounded-full">
-              //         <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 mr-1" />
-              //         <span className="font-bold text-lg">{safeRating}</span>
-              //         <span className="text-gray-600 ml-1">({safeRatingCount} reviews)</span>
-              //       </div>
-              //     </div>
-
-              //     <div className="mb-6">
-              //       <Button
-              //         onClick={() => setShowReviewForm(!showReviewForm)}
-              //         className="bg-blue-600 hover:bg-blue-700 text-white"
-              //       >
-              //         {showReviewForm ? "Cancel Review" : "Write a Review"}
-              //       </Button>
-              //     </div>
-
-              //     {showReviewForm && (
-              //       <Card className="mb-6 bg-blue-50 border-2 border-blue-200">
-              //         <CardContent className="p-4">
-              //           <h4 className="text-lg font-semibold mb-4">Share Your Experience</h4>
-              //           <div className="space-y-4">
-              //             <div>
-              //               <label className="block text-sm font-medium mb-2">Your Name</label>
-              //               <input
-              //                 type="text"
-              //                 value={newReview.name}
-              //                 onChange={(e) => setNewReview((prev) => ({ ...prev, name: e.target.value }))}
-              //                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              //                 placeholder="Enter your name"
-              //               />
-              //             </div>
-
-              //             <div>
-              //               <label className="block text-sm font-medium mb-2">Rating</label>
-              //               <div className="flex items-center space-x-1">
-              //                 {[1, 2, 3, 4, 5].map((star) => (
-              //                   <button
-              //                     key={star}
-              //                     type="button"
-              //                     onClick={() => setNewReview((prev) => ({ ...prev, rating: star }))}
-              //                     className="focus:outline-none"
-              //                   >
-              //                     <Star
-              //                       className={`h-6 w-6 ${
-              //                         star <= newReview.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-              //                       }`}
-              //                     />
-              //                   </button>
-              //                 ))}
-              //                 <span className="ml-2 text-sm text-gray-600">{newReview.rating} out of 5 stars</span>
-              //               </div>
-              //             </div>
-
-              //             <div>
-              //               <label className="block text-sm font-medium mb-2">Your Review</label>
-              //               <textarea
-              //                 value={newReview.comment}
-              //                 onChange={(e) => setNewReview((prev) => ({ ...prev, comment: e.target.value }))}
-              //                 rows={4}
-              //                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              //                 placeholder="Share your experience with this tour..."
-              //               />
-              //             </div>
-
-              //             <div className="flex space-x-3">
-              //               <Button
-              //                 onClick={submitReview}
-              //                 disabled={submittingReview || !newReview.name.trim() || !newReview.comment.trim()}
-              //                 className="bg-green-600 hover:bg-green-700 text-white"
-              //               >
-              //                 {submittingReview ? "Submitting..." : "Submit Review"}
-              //               </Button>
-              //               <Button onClick={() => setShowReviewForm(false)} variant="outline">
-              //                 Cancel
-              //               </Button>
-              //             </div>
-              //           </div>
-              //         </CardContent>
-              //       </Card>
-              //     )}
-
-              //     <div className="space-y-6">
-              //       {safeReviews.map((review, index) => (
-              //         <div key={review._id || index} className="bg-gray-50 p-4 rounded-lg border-l-4 border-l-blue-400">
-              //           <div className="flex items-center justify-between mb-3">
-              //             <div className="font-semibold text-gray-900 text-lg">{review.name}</div>
-              //             <div className="flex items-center">
-              //               {[...Array(5)].map((_, i) => (
-              //                 <Star
-              //                   key={i}
-              //                   className={`h-4 w-4 ${
-              //                     i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-              //                   }`}
-              //                 />
-              //               ))}
-              //               <span className="ml-2 font-semibold">{review.rating}/5</span>
-              //             </div>
-              //           </div>
-              //           <p className="text-gray-700 text-base leading-relaxed mb-2">"{review.comment}"</p>
-              //           {review.createdAt && (
-              //             <p className="text-sm text-gray-500">
-              //               {new Date(review.createdAt).toLocaleDateString("en-US", {
-              //                 year: "numeric",
-              //                 month: "long",
-              //                 day: "numeric",
-              //               })}
-              //             </p>
-              //           )}
-              //         </div>
-              //       ))}
-              //     </div>
-              //   </CardContent>
-              // </Card>
-               <Card className="shadow-lg border-0 bg-gradient-to-br from-amber-50 to-orange-50">
-        <CardContent className="p-8">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-gray-800 flex items-center">
-              <span className="text-amber-600 mr-3">⭐</span>
-              Customer Reviews & Ratings
-            </h3>
-            <div className="flex items-center bg-amber-100 px-6 py-3 rounded-full shadow-sm">
-              <Star className="h-6 w-6 fill-amber-500 text-amber-500 mr-2" />
-              <span className="font-bold text-2xl text-amber-700">{safeRating}</span>
-              <span className="text-amber-600 ml-2 font-medium">({safeRatingCount} reviews)</span>
-            </div>
-          </div>
-
-          {/* Rating breakdown */}
-          <div className="mb-8 bg-white/60 p-6 rounded-xl">
-            <h4 className="font-semibold text-lg mb-4">Rating Breakdown</h4>
-            <div className="space-y-3">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <div key={rating} className="flex items-center gap-4">
-                  <span className="text-sm font-medium w-8">{rating}★</span>
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-amber-500 h-2 rounded-full"
-                      style={{
-                        width: `${rating === 5 ? 70 : rating === 4 ? 20 : rating === 3 ? 8 : rating === 2 ? 2 : 0}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-gray-600 w-8">
-                    {rating === 5 ? "70%" : rating === 4 ? "20%" : rating === 3 ? "8%" : rating === 2 ? "2%" : "0%"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <Button
-              onClick={() => setShowReviewForm(!showReviewForm)}
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-3 text-lg font-medium shadow-lg"
-            >
-              {showReviewForm ? "Cancel Review" : "✍️ Write a Review"}
-            </Button>
-          </div>
-
-          {showReviewForm && (
-            <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
-                  <span className="text-blue-600 mr-3">💭</span>
-                  Share Your Experience
-                </h4>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold mb-3 text-gray-700">Your Name</label>
-                    <input
-                      type="text"
-                      value={newReview.name}
-                      onChange={(e) => setNewReview((prev) => ({ ...prev, name: e.target.value }))}
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                      placeholder="Enter your name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-3 text-gray-700">Rating</label>
-                    <div className="flex items-center space-x-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setNewReview((prev) => ({ ...prev, rating: star }))}
-                          className="focus:outline-none transform hover:scale-110 transition-transform duration-200"
-                        >
-                          <Star
-                            className={`h-8 w-8 ${
-                              star <= newReview.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"
-                            }`}
-                          />
-                        </button>
-                      ))}
-                      <span className="ml-4 text-lg font-medium text-gray-700 bg-white/60 px-3 py-1 rounded-full">
-                        {newReview.rating} out of 5 stars
-                      </span>
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-amber-50 to-orange-50">
+                <CardContent className="p-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <h3 className="text-3xl font-bold text-gray-800 flex items-center">
+                      <span className="text-amber-600 mr-3">⭐</span>
+                      Customer Reviews & Ratings
+                    </h3>
+                    <div className="flex items-center bg-amber-100 px-6 py-3 rounded-full shadow-sm">
+                      <Star className="h-6 w-6 fill-amber-500 text-amber-500 mr-2" />
+                      <span className="font-bold text-2xl text-amber-700">{safeRating}</span>
+                      <span className="text-amber-600 ml-2 font-medium">({safeRatingCount} reviews)</span>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold mb-3 text-gray-700">Your Review</label>
-                    <textarea
-                      value={newReview.comment}
-                      onChange={(e) => setNewReview((prev) => ({ ...prev, comment: e.target.value }))}
-                      rows={5}
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                      placeholder="Share your experience with this tour..."
-                    />
-                  </div>
-
-                  <div className="flex space-x-4">
-                    <Button
-                      onClick={submitReview}
-                      disabled={submittingReview || !newReview.name.trim() || !newReview.comment.trim()}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-3 font-medium shadow-lg"
-                    >
-                      {submittingReview ? "Submitting..." : "🚀 Submit Review"}
-                    </Button>
-                    <Button
-                      onClick={() => setShowReviewForm(false)}
-                      variant="outline"
-                      className="border-2 border-gray-300 hover:border-gray-400 px-8 py-3"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* <div className="space-y-6">
-            {safeReviews.map((review, index) => (
-              <div
-                key={review._id || index}
-                className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-amber-200 shadow-md hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {review.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="font-bold text-gray-900 text-lg">{review.name}</div>
-                      {review.createdAt && (
-                        <div className="text-sm text-gray-500">
-                          {new Date(review.createdAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
+                  {/* Rating breakdown */}
+                  <div className="mb-8 bg-white/60 p-6 rounded-xl">
+                    <h4 className="font-semibold text-lg mb-4">Rating Breakdown</h4>
+                    <div className="space-y-3">
+                      {[5, 4, 3, 2, 1].map((rating) => (
+                        <div key={rating} className="flex items-center gap-4">
+                          <span className="text-sm font-medium w-8">{rating}★</span>
+                          <div className="flex-1 bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-amber-500 h-2 rounded-full"
+                              style={{
+                                width: `${rating === 5 ? 70 : rating === 4 ? 20 : rating === 3 ? 8 : rating === 2 ? 2 : 0}%`,
+                              }}
+                            ></div>
+                          </div>
+                          <span className="text-sm text-gray-600 w-8">
+                            {rating === 5 ? "70%" : rating === 4 ? "20%" : rating === 3 ? "8%" : rating === 2 ? "2%" : "0%"}
+                          </span>
                         </div>
-                      )}
+                      ))}
                     </div>
                   </div>
-                  <div className="flex items-center bg-amber-100 px-3 py-1 rounded-full">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
-                      />
-                    ))}
-                    <span className="ml-2 font-bold text-amber-700">{review.rating}/5</span>
+
+                  <div className="mb-8">
+                    <Button
+                      onClick={() => setShowReviewForm(!showReviewForm)}
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-3 text-lg font-medium shadow-lg"
+                    >
+                      {showReviewForm ? "Cancel Review" : "✍️ Write a Review"}
+                    </Button>
                   </div>
-                </div>
-                <p className="text-gray-700 text-base leading-relaxed italic">"{review.comment}"</p>
-              </div>
-            ))}
-          </div> */}
-        </CardContent>
-      </Card>
+
+                  {showReviewForm && (
+                    <Card className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-lg">
+                      <CardContent className="p-6">
+                        <h4 className="text-xl font-bold mb-6 text-gray-800 flex items-center">
+                          <span className="text-blue-600 mr-3">💭</span>
+                          Share Your Experience
+                        </h4>
+                        <div className="space-y-6">
+                          <div>
+                            <label className="block text-sm font-semibold mb-3 text-gray-700">Your Name</label>
+                            <input
+                              type="text"
+                              value={newReview.name}
+                              onChange={(e) => setNewReview((prev) => ({ ...prev, name: e.target.value }))}
+                              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                              placeholder="Enter your name"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold mb-3 text-gray-700">Rating</label>
+                            <div className="flex items-center space-x-2">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() => setNewReview((prev) => ({ ...prev, rating: star }))}
+                                  className="focus:outline-none transform hover:scale-110 transition-transform duration-200"
+                                >
+                                  <Star
+                                    className={`h-8 w-8 ${
+                                      star <= newReview.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"
+                                    }`}
+                                  />
+                                </button>
+                              ))}
+                              <span className="ml-4 text-lg font-medium text-gray-700 bg-white/60 px-3 py-1 rounded-full">
+                                {newReview.rating} out of 5 stars
+                              </span>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold mb-3 text-gray-700">Your Review</label>
+                            <textarea
+                              value={newReview.comment}
+                              onChange={(e) => setNewReview((prev) => ({ ...prev, comment: e.target.value }))}
+                              rows={5}
+                              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                              placeholder="Share your experience with this tour..."
+                            />
+                          </div>
+
+                          <div className="flex space-x-4">
+                            <Button
+                              onClick={submitReview}
+                              disabled={submittingReview || !newReview.name.trim() || !newReview.comment.trim()}
+                              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-3 font-medium shadow-lg"
+                            >
+                              {submittingReview ? "Submitting..." : "🚀 Submit Review"}
+                            </Button>
+                            <Button
+                              onClick={() => setShowReviewForm(false)}
+                              variant="outline"
+                              className="border-2 border-gray-300 hover:border-gray-400 px-8 py-3"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Reviews Slider */}
+                  <div className="relative overflow-hidden">
+                    <style jsx>{`
+                      @keyframes slideRightToLeft {
+                        0% {
+                          transform: translateX(0);
+                        }
+                        100% {
+                          transform: translateX(-100%);
+                        }
+                      }
+                      .reviews-slider {
+                        animation: slideRightToLeft 40s linear infinite;
+                        display: flex;
+                        gap: 24px;
+                        width: calc(100% * 2);
+                      }
+                      .reviews-slider:hover {
+                        animation-play-state: paused;
+                      }
+                      .review-card {
+                        flex: 0 0 400px;
+                        min-width: 400px;
+                      }
+                    `}</style>
+                    
+                    <div className="reviews-slider">
+                      {/* First set of reviews */}
+                      {safeReviews.map((review, index) => (
+                        <div
+                          key={`first-${review._id || index}`}
+                          className="review-card bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-amber-200 shadow-md hover:shadow-lg transition-shadow duration-300"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                {review.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-900 text-lg">{review.name}</div>
+                                {review.createdAt && (
+                                  <div className="text-sm text-gray-500">
+                                    {new Date(review.createdAt).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center bg-amber-100 px-3 py-1 rounded-full">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
+                                />
+                              ))}
+                              <span className="ml-2 font-bold text-amber-700">{review.rating}/5</span>
+                            </div>
+                          </div>
+                          <p className="text-gray-700 text-base leading-relaxed italic">"{review.comment}"</p>
+                        </div>
+                      ))}
+                      
+                      {/* Duplicate set for infinite scroll */}
+                      {safeReviews.map((review, index) => (
+                        <div
+                          key={`second-${review._id || index}`}
+                          className="review-card bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-amber-200 shadow-md hover:shadow-lg transition-shadow duration-300"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                {review.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-900 text-lg">{review.name}</div>
+                                {review.createdAt && (
+                                  <div className="text-sm text-gray-500">
+                                    {new Date(review.createdAt).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center bg-amber-100 px-3 py-1 rounded-full">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
+                                />
+                              ))}
+                              <span className="ml-2 font-bold text-amber-700">{review.rating}/5</span>
+                            </div>
+                          </div>
+                          <p className="text-gray-700 text-base leading-relaxed italic">"{review.comment}"</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-            
 
             {safeReviews.length === 0 && (
               <Card className="shadow-md border-l-4 border-l-yellow-400">
@@ -1085,7 +1001,7 @@ const BlogDetail: React.FC = () => {
             {safeImportantInfo.length > 0 && (
               <Card className="border-l-4 border-l-red-400">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4 text-red-700">Important Information</h3>
+                  <h3 className="text-xl font-bold mb-4 text-red-700">📋 Important Information - Essential Tour Details</h3>
                   <ul className="space-y-2">
                     {safeImportantInfo.map((info, index) => (
                       <li key={index} className="flex items-start">
@@ -1097,6 +1013,266 @@ const BlogDetail: React.FC = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* FAQ Section */}
+            <Card className="shadow-lg border-l-4 border-l-blue-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-blue-700 flex items-center">
+                  ❓ Frequently Asked Questions - Common Tour Inquiries
+                </h3>
+                <div className="space-y-6">
+                  <div className="border-b border-gray-200 pb-4">
+                    <h4 className="font-semibold text-lg mb-2 text-gray-800">What should I bring for this tour?</h4>
+                    <p className="text-gray-600">We recommend comfortable walking shoes, weather-appropriate clothing, sunscreen, a water bottle, and a camera. Detailed packing list will be provided upon booking confirmation.</p>
+                  </div>
+                  <div className="border-b border-gray-200 pb-4">
+                    <h4 className="font-semibold text-lg mb-2 text-gray-800">Is this tour suitable for children?</h4>
+                    <p className="text-gray-600">This tour is suitable for children aged 8 and above. Children under 18 must be accompanied by an adult. Special arrangements can be made for families with younger children.</p>
+                  </div>
+                  <div className="border-b border-gray-200 pb-4">
+                    <h4 className="font-semibold text-lg mb-2 text-gray-800">What happens in case of bad weather?</h4>
+                    <p className="text-gray-600">Tours operate rain or shine. In case of severe weather conditions, we may reschedule or provide alternative indoor activities. Full refunds are available for weather-related cancellations.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-2 text-gray-800">How far in advance should I book?</h4>
+                    <p className="text-gray-600">We recommend booking at least 48 hours in advance, especially during peak seasons. Last-minute bookings are subject to availability.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Safety Information */}
+            <Card className="shadow-lg border-l-4 border-l-green-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-green-700 flex items-center">
+                  🛡️ Safety Information - Your Wellbeing is Our Priority
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-lg mb-3 text-gray-800">Health & Fitness Requirements</h4>
+                    <ul className="space-y-2 text-gray-600">
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span>Moderate fitness level required</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span>No serious medical conditions</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">✓</span>
+                        <span>Inform us of any dietary restrictions</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-3 text-gray-800">Safety Measures</h4>
+                    <ul className="space-y-2 text-gray-600">
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">🚑</span>
+                        <span>First aid trained guides</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">📱</span>
+                        <span>Emergency contact system</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-green-500 mr-2">🦺</span>
+                        <span>Safety equipment provided</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Weather Guide */}
+            <Card className="shadow-lg border-l-4 border-l-orange-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-orange-700 flex items-center">
+                  🌤️ Weather Guide - Seasonal Tour Information
+                </h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-lg mb-2 text-blue-800">Spring (Mar-May)</h4>
+                    <p className="text-sm text-blue-600 mb-2">Mild temperatures, blooming flowers</p>
+                    <p className="text-xs text-blue-500">15-25°C | Light jacket recommended</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-lg mb-2 text-green-800">Summer (Jun-Aug)</h4>
+                    <p className="text-sm text-green-600 mb-2">Warm weather, peak season</p>
+                    <p className="text-xs text-green-500">25-35°C | Sunscreen essential</p>
+                  </div>
+                  <div className="bg-amber-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-lg mb-2 text-amber-800">Autumn (Sep-Nov)</h4>
+                    <p className="text-sm text-amber-600 mb-2">Cool temperatures, beautiful colors</p>
+                    <p className="text-xs text-amber-500">10-20°C | Layer clothing</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-lg mb-2 text-slate-800">Winter (Dec-Feb)</h4>
+                    <p className="text-sm text-slate-600 mb-2">Cold weather, fewer crowds</p>
+                    <p className="text-xs text-slate-500">0-10°C | Warm clothing required</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* What to Bring */}
+            <Card className="shadow-lg border-l-4 border-l-purple-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-purple-700 flex items-center">
+                  🎒 What to Bring - Essential Packing Checklist
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Essential Items</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">👟</span>
+                        <span className="text-gray-700">Comfortable walking shoes</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">🧥</span>
+                        <span className="text-gray-700">Weather-appropriate clothing</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">🕶️</span>
+                        <span className="text-gray-700">Sunglasses and sunscreen</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">💧</span>
+                        <span className="text-gray-700">Water bottle</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Recommended Items</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">📸</span>
+                        <span className="text-gray-700">Camera or smartphone</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">🍫</span>
+                        <span className="text-gray-700">Light snacks</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">💊</span>
+                        <span className="text-gray-700">Personal medications</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-purple-500 mr-3">🆔</span>
+                        <span className="text-gray-700">Valid ID or passport</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Transportation & Meeting Point */}
+            <Card className="shadow-lg border-l-4 border-l-indigo-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-indigo-700 flex items-center">
+                  🚌 Transportation & Meeting Point - How to Get There
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Meeting Point Details</h4>
+                    <div className="bg-indigo-50 p-4 rounded-lg">
+                      <p className="text-indigo-800 font-medium mb-2">📍 Main Tourist Information Center</p>
+                      <p className="text-indigo-600 text-sm mb-2">123 Central Square, Downtown Area</p>
+                      <p className="text-indigo-600 text-sm mb-2">Look for the guide with a blue umbrella</p>
+                      <p className="text-indigo-600 text-sm">Arrive 15 minutes before departure</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Transportation Options</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <span className="text-indigo-500 mr-3">🚇</span>
+                        <div>
+                          <p className="font-medium text-gray-700">Public Transit</p>
+                          <p className="text-sm text-gray-600">Metro Line 2, Central Station (5 min walk)</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="text-indigo-500 mr-3">🚗</span>
+                        <div>
+                          <p className="font-medium text-gray-700">By Car</p>
+                          <p className="text-sm text-gray-600">Limited parking available nearby</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="text-indigo-500 mr-3">🚕</span>
+                        <div>
+                          <p className="font-medium text-gray-700">Taxi/Ride-share</p>
+                          <p className="text-sm text-gray-600">Drop-off zone directly in front</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact & Support */}
+            <Card className="shadow-lg border-l-4 border-l-teal-500">
+              <CardContent className="p-6">
+                <h3 className="text-2xl font-bold mb-6 text-teal-700 flex items-center">
+                  📞 Contact & Support - We're Here to Help
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Customer Support</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <span className="text-teal-500 mr-3">📱</span>
+                        <div>
+                          <p className="font-medium text-gray-700">Phone Support</p>
+                          <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
+                          <p className="text-xs text-gray-500">Available 24/7</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-teal-500 mr-3">✉️</span>
+                        <div>
+                          <p className="font-medium text-gray-700">Email Support</p>
+                          <p className="text-sm text-gray-600">support@tourscompany.com</p>
+                          <p className="text-xs text-gray-500">Response within 2 hours</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-4 text-gray-800">Emergency Contact</h4>
+                    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                      <p className="text-red-800 font-bold mb-2">🚨 During Tour Emergency</p>
+                      <p className="text-red-700 text-sm mb-1">Emergency Hotline: +1 (555) 999-0000</p>
+                      <p className="text-red-700 text-sm mb-1">WhatsApp: +1 (555) 999-0001</p>
+                      <p className="text-red-600 text-xs">Available during tour hours only</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h4 className="font-semibold text-lg mb-4 text-gray-800">Follow Us</h4>
+                  <div className="flex space-x-4">
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <span>📘</span>
+                      <span>Facebook</span>
+                    </Button>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <span>📷</span>
+                      <span>Instagram</span>
+                    </Button>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <span>🐦</span>
+                      <span>Twitter</span>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Right Column - Booking */}
@@ -1196,6 +1372,7 @@ const BlogDetail: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
+            
             {safeTags.length > 0 && (
               <Card className="relative z-0">
                 <CardContent className="p-6">
@@ -1210,9 +1387,6 @@ const BlogDetail: React.FC = () => {
                 </CardContent>
               </Card>
             )}
-
-
-         
           </div>
         </div>
       </div>

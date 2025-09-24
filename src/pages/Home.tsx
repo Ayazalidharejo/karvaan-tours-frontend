@@ -109,7 +109,7 @@ const toAbs = (url?: string): string => {
 const getFeaturedBlogs = async (limit = 6) => {
   try {
     console.log("[v0] Fetching featured blogs...")
-    const response = await api.get<PagedBlogs>("/api/posts", {
+    const response = await api.get<PagedBlogs>("/api/blogs", {
       params: { featured: true, limit, page: 1, status: "published" },
     })
 
@@ -129,7 +129,7 @@ const getFeaturedBlogs = async (limit = 6) => {
 const getBlogs = async (params: Record<string, string | number | boolean | undefined>) => {
   try {
     console.log("[v0] Fetching blogs with params:", params)
-    const response = await api.get<PagedBlogs>("/api/posts", { params })
+    const response = await api.get<PagedBlogs>("/api/blogs", { params })
 
     if (!response.data || !Array.isArray(response.data.posts)) {
       console.warn("[v0] Invalid response structure for blogs")
